@@ -1,6 +1,6 @@
 /* autopie for Balloon Juice, by cleek@ok-cleek.com */
 (function(autoPie, $, undefined) {
-    var pieStringsURI = "https://rawgit.com/ok-cleek/bj_autopie/master/pie_strings.json";
+    var pieStringsURI = "https://cdn.rawgit.com/ok-cleek/bjautopie/fc482a6d/pie_strings.json";
 
     // localstorage item name
     var lsPieNames = "BJAutoPieNamesList";
