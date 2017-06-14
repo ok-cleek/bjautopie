@@ -250,18 +250,18 @@
         }
     }
 
-	function arrayHasString(arrayName, arrayElement) {
-        for (var i = 0; i < arrayName.length; i++) {
-            if (arrayName[i] == arrayElement)
+	function arrayHasString(arr, arrayElement) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] == arrayElement)
                 return 1;
         }
         return 0;
 	}
 	
-    function removeByElement(arrayName, arrayElement) {
-        for (var i = 0; i < arrayName.length; i++) {
-            if (arrayName[i] == arrayElement)
-                arrayName.splice(i, 1);
+    function removeByElement(arr, arrayElement) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] == arrayElement)
+                arr.splice(i, 1);
         }
     }
 
