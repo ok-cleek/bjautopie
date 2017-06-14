@@ -1,19 +1,19 @@
 /* autopie for Balloon Juice, by cleek@ok-cleek.com */
 (function(autoPie, $, undefined) {
-    var pieStringsURI = "https://cdn.rawgit.com/ok-cleek/bjautopie/fc482a6d/pie_strings.json";
+    var pieStringsURI = "https://test.balloon-juice.com/pie_strings.json";
 
     // localstorage item name
     var lsPieNames = "BJAutoPieNamesList";
 
-	// show.hide pie texts
-	var showPieText = "&raquo;";
-	var hidePieText = "&laquo;";
+    // show.hide pie texts
+    var showPieText = "&raquo;";
+    var hidePieText = "&laquo;";
 
-	// emergency pie text
-	var noPieText = "I can't find my pie!";
-	
+    // emergency pie text
+    var noPieText = "I can't find my pie!";
+
     //////////////////////////////////
-    
+
     var bads = new Array();
 
     autoPie.init = function() {
@@ -28,16 +28,16 @@
                 function(jqXHR, textStatus, errorThrown) {
                     console.log("Pie fetch fail: " + errorThrown);
                     run(pieStrings);
-                }) 
+                })
     }
 
     function run(pieStrings) {
-		if (pieStrings.length==0) {
-       		pieStrings.push(noPieText);  
-       	}
-    	
+        if (pieStrings.length==0) {
+            pieStrings.push(noPieText);
+        }
+
         readBads();
-        modComments(pieStrings); 
+        modComments(pieStrings);
         addPieControls();
     }
 
@@ -124,25 +124,25 @@
         }
         return authorName;
     }
-    
+
     function replyToBad(cmt) {
         if (!!cmt) {
             for (var i = 0; i < cmt.childNodes.length; i++) {
                 var ch = cmt.childNodes[i];
                 if (!!ch.tagName && ch.tagName.toLowerCase() == "p") {
-	                for (var j = 0; j < ch.childNodes.length; j++) {
-	                    var gc = ch.childNodes[j];
-	                    if (!!gc.tagName && gc.tagName.toLowerCase()=="a") {
-	                    	if (idxBad(gc.innerHTML) != -1) {
-	                    		return 1;
-	                    	}
-	                	}
-	                }
-                }			
+                    for (var j = 0; j < ch.childNodes.length; j++) {
+                        var gc = ch.childNodes[j];
+                        if (!!gc.tagName && gc.tagName.toLowerCase()=="a") {
+                            if (idxBad(gc.innerHTML) != -1) {
+                                return 1;
+                            }
+                        }
+                    }
+                }
             }
-		}    	
-		
-		return 0;
+        }
+
+        return 0;
     }
 
     function pieText(pieStrings) {
@@ -173,7 +173,7 @@
                 var comment = document.getElementById(cm);
 
                 if (!!comment) {
-                	
+
                     var authName = cmtAuthName(comment);
 
                     var badIdx = idxBad(authName);
@@ -271,14 +271,14 @@
         }
     }
 
-	function arrayHasString(arr, arrayElement) {
+    function arrayHasString(arr, arrayElement) {
         for (var i = 0; i < arr.length; i++) {
             if (arr[i] == arrayElement)
                 return 1;
         }
         return 0;
-	}
-	
+    }
+
     function removeByElement(arr, arrayElement) {
         for (var i = 0; i < arr.length; i++) {
             if (arr[i] == arrayElement)
@@ -286,56 +286,140 @@
         }
     }
 
+    function removeTags(html) {
+        var tagBody = '(?:[^"\'>]|"[^"]*"|\'[^\']*\')*';
+
+        var tagOrComment = new RegExp(
+            '<(?:'
+            // Comment body.
+            + '!--(?:(?:-*[^->])*--+|-?)'
+            // Special "raw text" elements whose content should be elided.
+            + '|script\\b' + tagBody + '>[\\s\\S]*?</script\\s*'
+            + '|style\\b' + tagBody + '>[\\s\\S]*?</style\\s*'
+            // Regular name
+            + '|/?[a-z]'
+            + tagBody
+            + ')>',
+            'gi');
+
+      var oldHtml;
+      do {
+        oldHtml = html;
+        html = html.replace(tagOrComment, '');
+      } while (html !== oldHtml);
+      return html.replace(/</g, '&lt;');
+    }
+
+    function prettyName(txt) {
+    	console.log("prettyName: txt" + txt);
+        var newName = removeTags(txt);
+        console.log("prettyName: cleaned" + newName);
+        newName = newName.ellipses(50);
+        console.log("prettyName: output" + newName);
+        return newName;
+    }
+
+    function nameProc(txt) {
+    	console.log("nameProc: " + txt);
+        txt = txt.trim()
+        console.log("nameProc: trimmed: " + txt);
+        if (txt != "") {
+            if (txt.substring(0, 1) == '#') {
+            	console.log("nameProc: found #");
+                var num = Number(txt.substring(1));
+                console.log("nameProc: num is " + num);
+                
+                if (num <= 0 || num == NaN) {
+                    alert("Sorry - I can't find a comment with that number");
+                    return "";
+                }
+
+                txt = cmntAuthByNum(num);
+                
+                console.log("nameProc: comment auth from num " + txt);
+                
+                if (txt == "") {
+                    alert("Sorry - I can't find the author of comment #" + num);
+                    return "";
+                }
+            }
+        }
+        
+        console.log("nameProc: output " + txt);
+        
+        return txt;
+    }
+
+    function doAddBad() {
+    	console.log("doAddBad");
+    	
+        var txt = getEditText() + ''; // + '' to cvt to string
+
+		console.log("doAddBad: raw txt for add:" + txt);
+		
+        txt = nameProc(txt);
+        
+        console.log("doAddBad: processed name for add:" + txt);
+        
+        if (txt != "") {
+            var showText = prettyName(txt);
+            
+            console.log("doAddBad: pretty name for add:" + showText);
+            
+            if (confirm('Add commenter "' + showText + '" to pie filter?')) {
+            	
+            	console.log("doAddBad: add confirmed, adding to list");
+            	
+                addBad(txt);
+                //location.reload(true);
+                console.log("doAddBad: skipping refresh so we can see what's happening");
+            }
+        }
+    }
+
     function addBad(targetName) {
+    	console.log("addBad: adding '" + targetName);
+    	
         var listJSON = localStorage.getItem(lsPieNames);
+
+		console.log("addBad: current list JSON:" + listJSON);
 
         var list;
         if (!!listJSON) {
             list = JSON.parse(listJSON);
 
-			if (arrayHasString(list, targetName)==0) {
+			console.log("addBad: parsed list :" + list);
+
+            if (arrayHasString(list, targetName)==0) {
+            	console.log("addBad: target not found. adding");
                 list.push(targetName);
             }
         } else {
+        	console.log("addBad: no list found. making new list. adding");
             list = new Array(targetName)
         }
 
+		console.log("addBad: new list:" + list);
+
         var js_list = JSON.stringify(list);
+        
+        console.log("addBad: new list JSON:" + js_list);
+        
         localStorage.setItem(lsPieNames, js_list);
 
         bads.push(targetName);
+        
+        console.log("addBad: new bads list:" + bads);
     }
 
-    function doAddBad() {
-        var txt = getEditText() + ''; // + '' to cvt to string
-        txt = txt.trim();
-
+    function doRemBad() {
+        txt = nameProc(txt);
         if (txt != "") {
-            if (txt.substring(0, 1) == '#') {
-                var num = Number(txt.substring(1));
-                doAddBadN(num);
-            } else if (confirm('Add "' + txt + '" to pie filter?')) {
-                addBad(txt);
+            var showText = prettyName(txt);
+            if (confirm('Remove commenter "' + showText + '" from pie filter?')) {
+                remBad(txt);
+                location.reload(true);
             }
-            location.reload(true);
-        }
-    }
-
-    function doAddBadN(num) {
-        if (num > 0 && num != NaN) {
-            var txt = cmntAuthByNum(num);
-
-            if (txt != "") {
-                var showText = txt.ellipses(50);
-                if (confirm('Add "' + showText + '" to pie filter?')) {
-                    addBad(txt);
-                    location.reload(true);
-                }
-            } else {
-                alert("Sorry - I can't find the author of comment #" + num);
-            }
-        } else {
-            alert("Sorry - I can't find a comment with that number");
         }
     }
 
@@ -345,16 +429,16 @@
         var list;
         if (listJSON != "") {
             list = JSON.parse(listJSON);
-            
+
             if (arrayHasString(list, targetName)) {
-	            removeByElement(list, targetName);
-	            removeByElement(bads, targetName);
-	            location.reload(true);
-	        }
-	        else
-        	{
-        		alert("Sorry - You weren't filtering anyone by that name");
-        	}
+                removeByElement(list, targetName);
+                removeByElement(bads, targetName);
+                location.reload(true);
+            }
+            else
+            {
+                alert("Sorry - You weren't filtering anyone by that name");
+            }
         } else {
             list = new Array(targetName)
         }
@@ -364,38 +448,6 @@
         localStorage.setItem(lsPieNames, js_list);
     }
 
-    function doRemBad() {
-        var txt = getEditText() + ''; // + '' to cvt to string
-        txt = txt.trim();
-
-        if (txt != "") {
-            if (txt.substring(0, 1) == '#') {
-                var num = Number(txt.substring(1));
-                doRemBadN(num);
-            } else if (confirm('Remove "' + txt + '" from pie filter?')) {
-                remBad(txt);
-            }
-            location.reload(true);
-        }
-    }
-
-    function doRemBadN(num) {
-        if (num > 0 && num != NaN) {
-            var txt = cmntAuthByNum(num);
-
-            if (txt != "") {
-                var showText = txt.ellipses(50);
-                if (confirm('Remove "' + showText + '" from pie filter?')) {
-                    remBad(txt);
-                }
-            } else {
-                alert("Sorry - I can't find the author of comment #" + num);
-            }
-        } else {
-            alert("Sorry - I can't find a comment with that number");
-        }
-    }
-
     function doShowBads() {
         var listJSON = localStorage.getItem(lsPieNames);
         if (!!listJSON) {
@@ -403,11 +455,11 @@
             if (list.length > 0) {
                 var listText = "";
                 for (var i = 0; i < list.length - 1; i++) {
-                    listText = listText + '    ' + list[i].ellipses(50) + '\n';
+                    listText = listText + '    ' + prettyname(list[i]) + '\n';
                 }
-                listText = listText + '    ' + list[list.length - 1].ellipses(50);
+                listText = listText + '    ' + prettyName(list[list.length - 1]);
 
-                alert("You are filtering:\n" + listText);
+                alert("Here are the people you're filtering:\n" + listText);
             } else {
                 alert("You aren't filtering anyone.");
             }
@@ -452,13 +504,13 @@
 
                 var el = document.createElement("div");
                 el.innerHTML =
-                	`<form id="apForm">
+                    `<form id="apForm">
                     <span title="Use Cleek’s Pie filter to manage unpleasant commenters">Pie filter&nbsp;&nbsp;</span>
-					<input id="apAddBtn" type="button" value="Add" title="Add this person to the pie filter"/>
-					<input id="apRemBtn" type="button" value="Remove" title="Remove this person from the pie filter"/>
-					<input id="apNameTxt" type="text" autocomplete="on" placeholder="Name or comment # (ex. Bob or #123)" title="The name or comment number (ex. #123) of person to add/remove." style="display:inline-block;width:260px;padding:2px;margin:0px"  value="" />
-					<input id="apShowBtn" type="button" value="Show List" title="Show the list of all the people in your pie filter"/ style="float:right">
-					</form>`;
+                    <input id="apAddBtn" type="button" value="Add" title="Add this person to the pie filter"/>
+                    <input id="apRemBtn" type="button" value="Remove" title="Remove this person from the pie filter"/>
+                    <input id="apNameTxt" type="text" autocomplete="on" placeholder="Name or comment # (ex. Bob or #123)" title="The name or comment number (ex. #123) of person to add/remove." style="display:inline-block;width:260px;padding:2px;margin:0px"  value="" />
+                    <input id="apShowBtn" type="button" value="Show List" title="Show the list of all the people in your pie filter"/ style="float:right">
+                    </form>`;
 
                 el.style.color = '#707070';
                 el.style.border = 'solid 1px #c0c0c0';
