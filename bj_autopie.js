@@ -124,6 +124,26 @@
         }
         return authorName;
     }
+    
+    function replyToBad(cmt) {
+        if (!!cmt) {
+            for (var i = 0; i < cmt.childNodes.length; i++) {
+                var ch = cmt.childNodes[i];
+                if (!!ch.tagName && ch.tagName.toLowerCase() == "p") {
+	                for (var j = 0; j < ch.childNodes.length; j++) {
+	                    var gc = ch.childNodes[j];
+	                    if (!!gc.tagName && gc.tagName.toLowerCase()=="a") {
+	                    	if (idxBad(gc.innerHTML) != -1) {
+	                    		return 1;
+	                    	}
+	                	}
+	                }
+                }			
+            }
+		}    	
+		
+		return 0;
+    }
 
     function pieText(pieStrings) {
         var randomNum = Math.floor(Math.random() * pieStrings.length);
@@ -153,12 +173,13 @@
                 var comment = document.getElementById(cm);
 
                 if (!!comment) {
+                	
                     var authName = cmtAuthName(comment);
 
                     var badIdx = idxBad(authName);
 
                     // did we find anyone?
-                    if (badIdx != -1) {
+                    if (badIdx != -1 || replyToBad(comment)) {
                         var pie = pieText(pieStrings);
 
                         // to tag our wrapper DIV
