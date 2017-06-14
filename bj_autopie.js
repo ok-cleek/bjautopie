@@ -453,7 +453,7 @@
                 var el = document.createElement("div");
                 el.innerHTML =
                 	`<form id="apForm">
-                    Pie filter&nbsp;&nbsp;
+                    <span title="Use Cleek’s Pie filter to manage unpleasant commenters">Pie filter&nbsp;&nbsp;</span>
 					<input id="apAddBtn" type="button" value="Add" title="Add this person to the pie filter"/>
 					<input id="apRemBtn" type="button" value="Remove" title="Remove this person from the pie filter"/>
 					<input id="apNameTxt" type="text" autocomplete="on" placeholder="Name or comment # (ex. Bob or #123)" title="The name or comment number (ex. #123) of person to add/remove." style="display:inline-block;width:260px;padding:2px;margin:0px"  value="" />
