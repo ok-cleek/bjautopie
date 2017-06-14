@@ -452,12 +452,13 @@
 
                 var el = document.createElement("div");
                 el.innerHTML =
-                    `Pie filter&nbsp;&nbsp;
+                	`<form id="apForm">
+                    Pie filter&nbsp;&nbsp;
 					<input id="apAddBtn" type="button" value="Add" title="Add this person to the pie filter"/>
 					<input id="apRemBtn" type="button" value="Remove" title="Remove this person from the pie filter"/>
-					<input id="apNameTxt" type="text" placeholder="Name or comment # (ex. Bob or #123)" title="The name or comment number (ex. #123) of person to add/remove." style="display:inline-block;width:260px;padding:2px;margin:0px"  value="" />
+					<input id="apNameTxt" type="text" autocomplete="on" placeholder="Name or comment # (ex. Bob or #123)" title="The name or comment number (ex. #123) of person to add/remove." style="display:inline-block;width:260px;padding:2px;margin:0px"  value="" />
 					<input id="apShowBtn" type="button" value="Show List" title="Show the list of all the people in your pie filter"/ style="float:right">
-					`;
+					</form>`;
 
                 el.style.color = '#707070';
                 el.style.border = 'solid 1px #c0c0c0';
