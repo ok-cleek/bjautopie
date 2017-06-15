@@ -516,7 +516,7 @@
 
                 var el = document.createElement("div");
                 el.innerHTML =
-                    `<form id="apForm">
+                    `<form id="apForm" style="margin-bottom:0px" >
                     <span title="Use Cleek's Pie filter to manage unpleasant commenters">Pie filter&nbsp;&nbsp;</span>
                     <input id="apAddBtn" type="button" value="Add" title="Add this person to the pie filter"/>
                     <input id="apRemBtn" type="button" value="Remove" title="Remove this person from the pie filter"/>
