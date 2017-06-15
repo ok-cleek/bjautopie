@@ -323,11 +323,11 @@
     }
 
     function prettyName(txt) {
-    	console.log("prettyName: txt" + txt);
+    	console.log("prettyName: txt " + txt);
         var newName = removeTags(txt);
-        console.log("prettyName: cleaned" + newName);
+        console.log("prettyName: cleaned " + newName);
         newName = newName.ellipses(50);
-        console.log("prettyName: output" + newName);
+        console.log("prettyName: output " + newName);
         return newName;
     }
 
@@ -469,7 +469,7 @@
             	list.sort();
                 var listText = "";
                 for (var i = 0; i < list.length - 1; i++) {
-                	var t = i + i;
+                	var t = i + 1;
                     listText = listText + "    " + t + ". " + prettyName(list[i]) + "\n";
                 }
                 listText = listText + "    "  + list.length + ". " + prettyName(list[list.length - 1]);
