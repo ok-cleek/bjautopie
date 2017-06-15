@@ -327,6 +327,7 @@
         var newName = removeTags(txt);
         console.log("prettyName: cleaned " + newName);
         newName = newName.ellipses(50);
+        newName = newName.trim()
         console.log("prettyName: output " + newName);
         return newName;
     }
