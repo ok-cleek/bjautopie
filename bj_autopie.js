@@ -454,9 +454,10 @@
         if (!!listJSON) {
             var list = JSON.parse(listJSON);
             if (list.length > 0) {
+            	list.sort();
                 var listText = "";
                 for (var i = 0; i < list.length - 1; i++) {
-                    listText = listText + '    ' + prettyName(list[i]) + '\n';
+                    listText = listText + "    " + i + ". " + prettyName(list[i]) + "\n";
                 }
                 listText = listText + '    ' + prettyName(list[list.length - 1]);
 
