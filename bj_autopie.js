@@ -311,23 +311,23 @@
     }
 
     function prettyName(txt) {
-    	console.log("prettyName: txt" + txt);
+    	// console.log("prettyName: txt" + txt);
         var newName = removeTags(txt);
-        console.log("prettyName: cleaned" + newName);
+        // console.log("prettyName: cleaned" + newName);
         newName = newName.ellipses(50);
-        console.log("prettyName: output" + newName);
+        // console.log("prettyName: output" + newName);
         return newName;
     }
 
     function nameProc(txt) {
-    	console.log("nameProc: " + txt);
+    	// console.log("nameProc: " + txt);
         txt = txt.trim()
-        console.log("nameProc: trimmed: " + txt);
+        // console.log("nameProc: trimmed: " + txt);
         if (txt != "") {
             if (txt.substring(0, 1) == '#') {
-            	console.log("nameProc: found #");
+            	// console.log("nameProc: found #");
                 var num = Number(txt.substring(1));
-                console.log("nameProc: num is " + num);
+                // console.log("nameProc: num is " + num);
                 
                 if (num <= 0 || num == NaN) {
                     alert("Sorry - I can't find a comment with that number");
@@ -336,7 +336,7 @@
 
                 txt = cmntAuthByNum(num);
                 
-                console.log("nameProc: comment auth from num " + txt);
+                // console.log("nameProc: comment auth from num " + txt);
                 
                 if (txt == "") {
                     alert("Sorry - I can't find the author of comment #" + num);
@@ -345,74 +345,75 @@
             }
         }
         
-        console.log("nameProc: output " + txt);
+        // console.log("nameProc: output " + txt);
         
         return txt;
     }
 
     function doAddBad() {
-    	console.log("doAddBad");
+    	// console.log("doAddBad");
     	
         var txt = getEditText() + ''; // + '' to cvt to string
 
-		console.log("doAddBad: raw txt for add:" + txt);
+		// console.log("doAddBad: raw txt for add:" + txt);
 		
         txt = nameProc(txt);
         
-        console.log("doAddBad: processed name for add:" + txt);
+        // console.log("doAddBad: processed name for add:" + txt);
         
         if (txt != "") {
             var showText = prettyName(txt);
             
-            console.log("doAddBad: pretty name for add:" + showText);
+            // console.log("doAddBad: pretty name for add:" + showText);
             
             if (confirm('Add commenter "' + showText + '" to pie filter?')) {
             	
-            	console.log("doAddBad: add confirmed, adding to list");
+            	// console.log("doAddBad: add confirmed, adding to list");
             	
                 addBad(txt);
-                //location.reload(true);
-                console.log("doAddBad: skipping refresh so we can see what's happening");
+                location.reload(true);
+                // console.log("doAddBad: skipping refresh so we can see what's happening");
             }
         }
     }
 
     function addBad(targetName) {
-    	console.log("addBad: adding '" + targetName);
+    	// console.log("addBad: adding '" + targetName);
     	
         var listJSON = localStorage.getItem(lsPieNames);
 
-		console.log("addBad: current list JSON:" + listJSON);
+		// console.log("addBad: current list JSON:" + listJSON);
 
         var list;
         if (!!listJSON) {
             list = JSON.parse(listJSON);
 
-			console.log("addBad: parsed list :" + list);
+			// console.log("addBad: parsed list :" + list);
 
             if (arrayHasString(list, targetName)==0) {
-            	console.log("addBad: target not found. adding");
+            	// console.log("addBad: target not found. adding");
                 list.push(targetName);
             }
         } else {
-        	console.log("addBad: no list found. making new list. adding");
+        	// console.log("addBad: no list found. making new list. adding");
             list = new Array(targetName)
         }
 
-		console.log("addBad: new list:" + list);
+		// console.log("addBad: new list:" + list);
 
         var js_list = JSON.stringify(list);
         
-        console.log("addBad: new list JSON:" + js_list);
+        // console.log("addBad: new list JSON:" + js_list);
         
         localStorage.setItem(lsPieNames, js_list);
 
         bads.push(targetName);
         
-        console.log("addBad: new bads list:" + bads);
+        // console.log("addBad: new bads list:" + bads);
     }
 
     function doRemBad() {
+        var txt = getEditText() + ''; // + '' to cvt to string
         txt = nameProc(txt);
         if (txt != "") {
             var showText = prettyName(txt);
@@ -491,7 +492,18 @@
             XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
             null);
 
-        if (commentForm.snapshotLength == 1) {
+		if (commentForm.snapshotLength == 0) {
+			// console.log("looking for closed");
+	        commentForm = document.evaluate(
+	            "//div[contains(@class,'comment-entry')]",
+	            document,
+	            null,
+	            XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
+	            null);			
+		}
+		
+		if (commentForm.snapshotLength == 1) {
+			// console.log("got one");
             var frm = commentForm.snapshotItem(0);
 
             var taw = "100%";
@@ -505,7 +517,7 @@
                 var el = document.createElement("div");
                 el.innerHTML =
                     `<form id="apForm">
-                    <span title="Use Cleek’s Pie filter to manage unpleasant commenters">Pie filter&nbsp;&nbsp;</span>
+                    <span title="Use Cleek's Pie filter to manage unpleasant commenters">Pie filter&nbsp;&nbsp;</span>
                     <input id="apAddBtn" type="button" value="Add" title="Add this person to the pie filter"/>
                     <input id="apRemBtn" type="button" value="Remove" title="Remove this person from the pie filter"/>
                     <input id="apNameTxt" type="text" autocomplete="on" placeholder="Name or comment # (ex. Bob or #123)" title="The name or comment number (ex. #123) of person to add/remove." style="display:inline-block;width:260px;padding:2px;margin:0px"  value="" />
