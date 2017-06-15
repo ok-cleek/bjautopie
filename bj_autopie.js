@@ -114,17 +114,6 @@
             var vcard = firstChild(comment, "div", "comment-author vcard");
             var cite = firstChild(vcard, "cite", "fn");
             if (!!cite) {
-
-            	// admin mode extra edit-authorXXXXXX tag?
-            	if (cite.childNodes.length == 1) {
-            		var ch = cite.childNodes[0];
-            		if (!!ch.tagName &&
-            		    ch.tagName.toLowerCase()=="span" &&
-            		    ch.id.starsWith("edit-author")) {
-            		    	cite = cite.childNodes[0];
-            		}
-            	}
-            	
                 var a = firstChild(cite, "a");
                 if (!!a) {
                     authorName = a.innerHTML;
