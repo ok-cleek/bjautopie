@@ -12,6 +12,9 @@
     // emergency pie text
     var noPieText = "I can't find my pie!";
 
+    // turn this on to pie replies to pie'd commenters
+    var pieReplies = false;
+    
     //////////////////////////////////
 
     var bads = new Array();
@@ -127,17 +130,17 @@
 
     function replyToBad(cmt) {
         if (!!cmt) {
-        	console.log("replyToBad: checking");
+            // console.log("replyToBad: checking");
             for (var i = 0; i < cmt.childNodes.length; i++) {
                 var ch = cmt.childNodes[i];
                 if (!!ch.tagName && ch.tagName.toLowerCase() == "p") {
                     for (var j = 0; j < ch.childNodes.length; j++) {
                         var gc = ch.childNodes[j];
                         if (!!gc.tagName && gc.tagName.toLowerCase()=="a") {
-                        	console.log("replyToBad: testing " + gc.innerHTML);
-                        	var idx = idxBad(gc.innerHTML);
+                            // console.log("replyToBad: testing " + gc.innerHTML);
+                            var idx = idxBad(gc.innerHTML);
                             if (idx != -1) {
-                            	console.log("replyToBad: match");
+                                // console.log("replyToBad: match");
                                 return idx;
                             }
                         }
@@ -146,7 +149,7 @@
             }
         }
 
-		// console.log("replyToBad: no match");
+        // // console.log("replyToBad: no match");
         return -1;
     }
 
@@ -164,12 +167,12 @@
             XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
             null);
 
-		console.log("modComments: comment LIs: " + allLIs.snapshotLength);
+        // console.log("modComments: comment LIs: " + allLIs.snapshotLength);
 
         for (var story = 0; story < allLIs.snapshotLength; story++) {
-			
-			console.log("modComments: comment " + story + 1);
-			
+            
+            // console.log("modComments: comment " + story + 1);
+            
             thisLI = allLIs.snapshotItem(story);
 
             var re = /(li\-comment\-)(.*)/;
@@ -186,26 +189,26 @@
 
                     var authName = cmtAuthName(comment);
                     
-                    console.log("modComments: looking at comment from " + authName);
+                    // console.log("modComments: looking at comment from " + authName);
 
                     var badIdx = idxBad(authName);
 
-					console.log("modComments: badidx ? " + badIdx);
+                    // console.log("modComments: badidx ? " + badIdx);
 
-					var badInReply = replyToBad(comment)
-					
-					console.log("modComments: bad reply ? " + badInReply);
-					
+                    var badInReply = pieReplies ? replyToBad(comment) : -1;
+                    
+                    // console.log("modComments: bad reply ? " + badInReply);
+                    
                     // did we find anyone?
                     if (badIdx != -1 || badInReply!=-1) {
 
-						console.log("modComments: pieing");
-			
+                        // console.log("modComments: pieing");
+            
                         var pie = pieText(pieStrings);
                         
                         if (badIdx == -1 && badInReply != -1) {
-                        	console.log("bad reply");
-                        	pie = authName + " replied to " + bads[badInReply] + ": " + pie;
+                            // console.log("bad reply");
+                            pie = "<em>Pied reply to @" + bads[badInReply] + ":</em><blockquote>" + pie + "</blockquote>";
                         }
 
                         // to tag our wrapper DIV
@@ -337,24 +340,24 @@
     }
 
     function prettyName(txt) {
-    	// console.log("prettyName: txt " + txt);
+        // // console.log("prettyName: txt " + txt);
         var newName = removeTags(txt);
-        // console.log("prettyName: cleaned " + newName);
+        // // console.log("prettyName: cleaned " + newName);
         newName = newName.ellipses(50);
         newName = newName.trim()
-        // console.log("prettyName: output " + newName);
+        // // console.log("prettyName: output " + newName);
         return newName;
     }
 
     function nameProc(txt) {
-    	// console.log("nameProc: " + txt);
+        // // console.log("nameProc: " + txt);
         txt = txt.trim()
-        // console.log("nameProc: trimmed: " + txt);
+        // // console.log("nameProc: trimmed: " + txt);
         if (txt != "") {
             if (txt.substring(0, 1) == '#') {
-            	// console.log("nameProc: found #");
+                // // console.log("nameProc: found #");
                 var num = Number(txt.substring(1));
-                // console.log("nameProc: num is " + num);
+                // // console.log("nameProc: num is " + num);
                 
                 if (num <= 0 || num == NaN) {
                     alert("Sorry - I can't find a comment with that number");
@@ -363,7 +366,7 @@
 
                 txt = cmntAuthByNum(num);
                 
-                // console.log("nameProc: comment auth from num " + txt);
+                // // console.log("nameProc: comment auth from num " + txt);
                 
                 if (txt == "") {
                     alert("Sorry - I can't find the author of comment #" + num);
@@ -372,71 +375,71 @@
             }
         }
         
-        // console.log("nameProc: output " + txt);
+        // // console.log("nameProc: output " + txt);
         
         return txt;
     }
 
     function doAddBad() {
-    	// console.log("doAddBad");
-    	
+        // // console.log("doAddBad");
+        
         var txt = getEditText() + ''; // + '' to cvt to string
 
-		// console.log("doAddBad: raw txt for add:" + txt);
-		
+        // // console.log("doAddBad: raw txt for add:" + txt);
+        
         txt = nameProc(txt);
         
-        // console.log("doAddBad: processed name for add:" + txt);
+        // // console.log("doAddBad: processed name for add:" + txt);
         
         if (txt != "") {
             var showText = prettyName(txt);
             
-            // console.log("doAddBad: pretty name for add:" + showText);
+            // // console.log("doAddBad: pretty name for add:" + showText);
             
             if (confirm('Add commenter "' + showText + '" to pie filter?')) {
-            	
-            	// console.log("doAddBad: add confirmed, adding to list");
-            	
+                
+                // // console.log("doAddBad: add confirmed, adding to list");
+                
                 addBad(txt);
                 location.reload(true);
-                // console.log("doAddBad: skipping refresh so we can see what's happening");
+                // // console.log("doAddBad: skipping refresh so we can see what's happening");
             }
         }
     }
 
     function addBad(targetName) {
-    	// console.log("addBad: adding '" + targetName);
-    	
+        // // console.log("addBad: adding '" + targetName);
+        
         var listJSON = localStorage.getItem(lsPieNames);
 
-		// console.log("addBad: current list JSON:" + listJSON);
+        // // console.log("addBad: current list JSON:" + listJSON);
 
         var list;
         if (!!listJSON) {
             list = JSON.parse(listJSON);
 
-			// console.log("addBad: parsed list :" + list);
+            // // console.log("addBad: parsed list :" + list);
 
             if (arrayHasString(list, targetName)==0) {
-            	// console.log("addBad: target not found. adding");
+                // // console.log("addBad: target not found. adding");
                 list.push(targetName);
             }
         } else {
-        	// console.log("addBad: no list found. making new list. adding");
+            // // console.log("addBad: no list found. making new list. adding");
             list = new Array(targetName)
         }
 
-		// console.log("addBad: new list:" + list);
+        // // console.log("addBad: new list:" + list);
 
         var js_list = JSON.stringify(list);
         
-        // console.log("addBad: new list JSON:" + js_list);
+        // // console.log("addBad: new list JSON:" + js_list);
         
         localStorage.setItem(lsPieNames, js_list);
 
         bads.push(targetName);
         
-        // console.log("addBad: new bads list:" + bads);
+        // // console.log("addBad: new bads list:" + bads);
     }
 
     function doRemBad() {
@@ -481,10 +484,10 @@
         if (!!listJSON) {
             var list = JSON.parse(listJSON);
             if (list.length > 0) {
-            	list.sort();
+                list.sort();
                 var listText = "";
                 for (var i = 0; i < list.length - 1; i++) {
-                	var t = i + 1;
+                    var t = i + 1;
                     listText = listText + "    " + t + ". " + prettyName(list[i]) + "\n";
                 }
                 listText = listText + "    "  + list.length + ". " + prettyName(list[list.length - 1]);
@@ -521,16 +524,16 @@
             XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
             null);
 
-		if (commentForm.snapshotLength == 0) {
-	        commentForm = document.evaluate(
-	            "//div[contains(@class,'comment-entry')]",
-	            document,
-	            null,
-	            XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
-	            null);			
-		}
-		
-		if (commentForm.snapshotLength == 1) {
+        if (commentForm.snapshotLength == 0) {
+            commentForm = document.evaluate(
+                "//div[contains(@class,'comment-entry')]",
+                document,
+                null,
+                XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
+                null);          
+        }
+        
+        if (commentForm.snapshotLength == 1) {
             var frm = commentForm.snapshotItem(0);
 
             var taw = "100%";
@@ -570,7 +573,7 @@
 !function(e,n,o){function s(e,n){return typeof e===n}function a(){var e,n,o,a,t,l,f;for(var c in r)if(r.hasOwnProperty(c)){if(e=[],n=r[c],n.name&&(e.push(n.name.toLowerCase()),n.options&&n.options.aliases&&n.options.aliases.length))for(o=0;o<n.options.aliases.length;o++)e.push(n.options.aliases[o].toLowerCase());for(a=s(n.fn,"function")?n.fn():n.fn,t=0;t<e.length;t++)l=e[t],f=l.split("."),1===f.length?Modernizr[f[0]]=a:(!Modernizr[f[0]]||Modernizr[f[0]]instanceof Boolean||(Modernizr[f[0]]=new Boolean(Modernizr[f[0]])),Modernizr[f[0]][f[1]]=a),i.push((a?"":"no-")+f.join("-"))}}function t(e){var n=f.className,o=Modernizr._config.classPrefix||"";if(c&&(n=n.baseVal),Modernizr._config.enableJSClass){var s=new RegExp("(^|\\s)"+o+"no-js(\\s|$)");n=n.replace(s,"$1"+o+"js$2")}Modernizr._config.enableClasses&&(n+=" "+o+e.join(" "+o),c?f.className.baseVal=n:f.className=n)}var i=[],r=[],l={_version:"3.5.0",_config:{classPrefix:"",enableClasses:!0,enableJSClass:!0,usePrefixes:!0},_q:[],on:function(e,n){var o=this;setTimeout(function(){n(o[e])},0)},addTest:function(e,n,o){r.push({name:e,fn:n,options:o})},addAsyncTest:function(e){r.push({name:null,fn:e})}},Modernizr=function(){};Modernizr.prototype=l,Modernizr=new Modernizr,Modernizr.addTest("localstorage",function(){var e="modernizr";try{return localStorage.setItem(e,e),localStorage.removeItem(e),!0}catch(n){return!1}});var f=n.documentElement,c="svg"===f.nodeName.toLowerCase();a(),t(i),delete l.addTest,delete l.addAsyncTest;for(var u=0;u<Modernizr._q.length;u++)Modernizr._q[u]();e.Modernizr=Modernizr}(window,document);
 
 if (Modernizr.localstorage) {
-	jQuery(document).ready(function($) {
-	    autoPie.init();
-	});
+    jQuery(document).ready(function($) {
+        autoPie.init();
+    });
 }
