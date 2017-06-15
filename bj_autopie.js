@@ -456,7 +456,7 @@
             if (list.length > 0) {
                 var listText = "";
                 for (var i = 0; i < list.length - 1; i++) {
-                    listText = listText + '    ' + prettyname(list[i]) + '\n';
+                    listText = listText + '    ' + prettyName(list[i]) + '\n';
                 }
                 listText = listText + '    ' + prettyName(list[list.length - 1]);
 
