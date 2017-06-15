@@ -134,6 +134,7 @@
                     for (var j = 0; j < ch.childNodes.length; j++) {
                         var gc = ch.childNodes[j];
                         if (!!gc.tagName && gc.tagName.toLowerCase()=="a") {
+                        	console.log("replyToBad: testing " + gc.innerHTML);
                         	var idx = idxBad(gc.innerHTML);
                             if (idx != -1) {
                             	console.log("replyToBad: match");
@@ -163,9 +164,12 @@
             XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
             null);
 
-        for (var story = 0; story < allLIs.snapshotLength; story++) {
-			console.log("modComments: comment LIs: " + allLIs.snapshotLength);
+		console.log("modComments: comment LIs: " + allLIs.snapshotLength);
 
+        for (var story = 0; story < allLIs.snapshotLength; story++) {
+			
+			console.log("modComments: comment " story + 1);
+			
             thisLI = allLIs.snapshotItem(story);
 
             var re = /(li\-comment\-)(.*)/;
