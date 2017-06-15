@@ -457,7 +457,8 @@
             	list.sort();
                 var listText = "";
                 for (var i = 0; i < list.length - 1; i++) {
-                    listText = listText + "    " + i + 1 + ". " + prettyName(list[i]) + "\n";
+                	var t = i + i;
+                    listText = listText + "    " + t + ". " + prettyName(list[i]) + "\n";
                 }
                 listText = listText + "    "  + list.length + ". " + prettyName(list[list.length - 1]);
 
