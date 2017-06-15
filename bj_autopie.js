@@ -13,7 +13,7 @@
     var noPieText = "I can't find my pie!";
 
     // turn this on to pie replies to pie'd commenters
-    var pieReplies = false;
+    var pieReplies = true;
     
     //////////////////////////////////
 
