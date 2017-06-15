@@ -114,6 +114,15 @@
             var vcard = firstChild(comment, "div", "comment-author vcard");
             var cite = firstChild(vcard, "cite", "fn");
             if (!!cite) {
+
+            	// admin mode extra edit-authorXXXXXX tag?
+            	if (cite.childNodes.length == 1) {
+            		if (cite.childNodes[0].tagName.toLowerCase()=="span" &&
+            		    cite.childNodes[0].id.starsWith("edit-author") {
+            		    	cite = cite.childNodes[0];
+            		}
+            	}
+            	
                 var a = firstChild(cite, "a");
                 if (!!a) {
                     authorName = a.innerHTML;
@@ -127,7 +136,7 @@
 
     function replyToBad(cmt) {
         if (!!cmt) {
-        	console.log("replyToBad: checking");
+        	// console.log("replyToBad: checking");
             for (var i = 0; i < cmt.childNodes.length; i++) {
                 var ch = cmt.childNodes[i];
                 if (!!ch.tagName && ch.tagName.toLowerCase() == "p") {
@@ -135,7 +144,7 @@
                         var gc = ch.childNodes[j];
                         if (!!gc.tagName && gc.tagName.toLowerCase()=="a") {
                             if (idxBad(gc.innerHTML) != -1) {
-                            	console.log("replyToBad: match");
+                            	// console.log("replyToBad: match");
                                 return 1;
                             }
                         }
@@ -144,7 +153,7 @@
             }
         }
 
-		console.log("replyToBad: no match");
+		// console.log("replyToBad: no match");
         return 0;
     }
 
@@ -163,7 +172,7 @@
             null);
 
         for (var story = 0; story < allLIs.snapshotLength; story++) {
-			console.log("modComments: comment LIs: " + allLIs.snapshotLength);
+			// console.log("modComments: comment LIs: " + allLIs.snapshotLength);
 
             thisLI = allLIs.snapshotItem(story);
 
@@ -181,16 +190,16 @@
 
                     var authName = cmtAuthName(comment);
                     
-                    console.log("modComments: looking at comment from " + authName);
+                    // console.log("modComments: looking at comment from " + authName);
 
                     var badIdx = idxBad(authName);
 
-					console.log("modComments: idx into baddies is " + badIdx);
+					// console.log("modComments: idx into baddies is " + badIdx);
 
                     // did we find anyone?
                     if (badIdx != -1 || replyToBad(comment)) {
 
-						console.log("modComments: pieing");
+						// console.log("modComments: pieing");
 			
                         var pie = pieText(pieStrings);
 
@@ -323,24 +332,24 @@
     }
 
     function prettyName(txt) {
-    	console.log("prettyName: txt " + txt);
+    	// console.log("prettyName: txt " + txt);
         var newName = removeTags(txt);
-        console.log("prettyName: cleaned " + newName);
+        // console.log("prettyName: cleaned " + newName);
         newName = newName.ellipses(50);
         newName = newName.trim()
-        console.log("prettyName: output " + newName);
+        // console.log("prettyName: output " + newName);
         return newName;
     }
 
     function nameProc(txt) {
-    	console.log("nameProc: " + txt);
+    	// console.log("nameProc: " + txt);
         txt = txt.trim()
-        console.log("nameProc: trimmed: " + txt);
+        // console.log("nameProc: trimmed: " + txt);
         if (txt != "") {
             if (txt.substring(0, 1) == '#') {
-            	console.log("nameProc: found #");
+            	// console.log("nameProc: found #");
                 var num = Number(txt.substring(1));
-                console.log("nameProc: num is " + num);
+                // console.log("nameProc: num is " + num);
                 
                 if (num <= 0 || num == NaN) {
                     alert("Sorry - I can't find a comment with that number");
@@ -349,7 +358,7 @@
 
                 txt = cmntAuthByNum(num);
                 
-                console.log("nameProc: comment auth from num " + txt);
+                // console.log("nameProc: comment auth from num " + txt);
                 
                 if (txt == "") {
                     alert("Sorry - I can't find the author of comment #" + num);
@@ -358,71 +367,71 @@
             }
         }
         
-        console.log("nameProc: output " + txt);
+        // console.log("nameProc: output " + txt);
         
         return txt;
     }
 
     function doAddBad() {
-    	console.log("doAddBad");
+    	// console.log("doAddBad");
     	
         var txt = getEditText() + ''; // + '' to cvt to string
 
-		console.log("doAddBad: raw txt for add:" + txt);
+		// console.log("doAddBad: raw txt for add:" + txt);
 		
         txt = nameProc(txt);
         
-        console.log("doAddBad: processed name for add:" + txt);
+        // console.log("doAddBad: processed name for add:" + txt);
         
         if (txt != "") {
             var showText = prettyName(txt);
             
-            console.log("doAddBad: pretty name for add:" + showText);
+            // console.log("doAddBad: pretty name for add:" + showText);
             
             if (confirm('Add commenter "' + showText + '" to pie filter?')) {
             	
-            	console.log("doAddBad: add confirmed, adding to list");
+            	// console.log("doAddBad: add confirmed, adding to list");
             	
                 addBad(txt);
-                //location.reload(true);
-                console.log("doAddBad: skipping refresh so we can see what's happening");
+                location.reload(true);
+                // console.log("doAddBad: skipping refresh so we can see what's happening");
             }
         }
     }
 
     function addBad(targetName) {
-    	console.log("addBad: adding '" + targetName);
+    	// console.log("addBad: adding '" + targetName);
     	
         var listJSON = localStorage.getItem(lsPieNames);
 
-		console.log("addBad: current list JSON:" + listJSON);
+		// console.log("addBad: current list JSON:" + listJSON);
 
         var list;
         if (!!listJSON) {
             list = JSON.parse(listJSON);
 
-			console.log("addBad: parsed list :" + list);
+			// console.log("addBad: parsed list :" + list);
 
             if (arrayHasString(list, targetName)==0) {
-            	console.log("addBad: target not found. adding");
+            	// console.log("addBad: target not found. adding");
                 list.push(targetName);
             }
         } else {
-        	console.log("addBad: no list found. making new list. adding");
+        	// console.log("addBad: no list found. making new list. adding");
             list = new Array(targetName)
         }
 
-		console.log("addBad: new list:" + list);
+		// console.log("addBad: new list:" + list);
 
         var js_list = JSON.stringify(list);
         
-        console.log("addBad: new list JSON:" + js_list);
+        // console.log("addBad: new list JSON:" + js_list);
         
         localStorage.setItem(lsPieNames, js_list);
 
         bads.push(targetName);
         
-        console.log("addBad: new bads list:" + bads);
+        // console.log("addBad: new bads list:" + bads);
     }
 
     function doRemBad() {
