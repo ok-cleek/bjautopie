@@ -127,6 +127,7 @@
 
     function replyToBad(cmt) {
         if (!!cmt) {
+        	console.log("replyToBad: checking");
             for (var i = 0; i < cmt.childNodes.length; i++) {
                 var ch = cmt.childNodes[i];
                 if (!!ch.tagName && ch.tagName.toLowerCase() == "p") {
@@ -134,6 +135,7 @@
                         var gc = ch.childNodes[j];
                         if (!!gc.tagName && gc.tagName.toLowerCase()=="a") {
                             if (idxBad(gc.innerHTML) != -1) {
+                            	console.log("replyToBad: match");
                                 return 1;
                             }
                         }
@@ -142,6 +144,7 @@
             }
         }
 
+		console.log("replyToBad: no match");
         return 0;
     }
 
@@ -160,6 +163,8 @@
             null);
 
         for (var story = 0; story < allLIs.snapshotLength; story++) {
+			console.log("modComments: comment LIs: " + allLIs.snapshotLength);
+
             thisLI = allLIs.snapshotItem(story);
 
             var re = /(li\-comment\-)(.*)/;
@@ -175,11 +180,18 @@
                 if (!!comment) {
 
                     var authName = cmtAuthName(comment);
+                    
+                    console.log("modComments: looking at comment from " + authName);
 
                     var badIdx = idxBad(authName);
 
+					console.log("modComments: idx into baddies is " + badIdx);
+
                     // did we find anyone?
                     if (badIdx != -1 || replyToBad(comment)) {
+
+						console.log("modComments: pieing");
+			
                         var pie = pieText(pieStrings);
 
                         // to tag our wrapper DIV
@@ -495,7 +507,6 @@
             null);
 
 		if (commentForm.snapshotLength == 0) {
-			console.log("looking for closed");
 	        commentForm = document.evaluate(
 	            "//div[contains(@class,'comment-entry')]",
 	            document,
@@ -505,7 +516,6 @@
 		}
 		
 		if (commentForm.snapshotLength == 1) {
-			console.log("got one");
             var frm = commentForm.snapshotItem(0);
 
             var taw = "100%";
