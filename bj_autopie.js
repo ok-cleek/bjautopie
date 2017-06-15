@@ -118,7 +118,7 @@
             	// admin mode extra edit-authorXXXXXX tag?
             	if (cite.childNodes.length == 1) {
             		if (cite.childNodes[0].tagName.toLowerCase()=="span" &&
-            		    cite.childNodes[0].id.starsWith("edit-author") {
+            		    cite.childNodes[0].id.starsWith("edit-author")) {
             		    	cite = cite.childNodes[0];
             		}
             	}
