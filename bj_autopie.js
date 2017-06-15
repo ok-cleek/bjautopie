@@ -168,7 +168,7 @@
 
         for (var story = 0; story < allLIs.snapshotLength; story++) {
 			
-			console.log("modComments: comment " story + 1);
+			console.log("modComments: comment " + story + 1);
 			
             thisLI = allLIs.snapshotItem(story);
 
