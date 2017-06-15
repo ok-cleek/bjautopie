@@ -457,9 +457,9 @@
             	list.sort();
                 var listText = "";
                 for (var i = 0; i < list.length - 1; i++) {
-                    listText = listText + "    " + i + ". " + prettyName(list[i]) + "\n";
+                    listText = listText + "    " + i + 1 + ". " + prettyName(list[i]) + "\n";
                 }
-                listText = listText + '    ' + prettyName(list[list.length - 1]);
+                listText = listText + "    "  + list.length + ". " + prettyName(list[list.length - 1]);
 
                 alert("Here are the people you're filtering:\n" + listText);
             } else {
