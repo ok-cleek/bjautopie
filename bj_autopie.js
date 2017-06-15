@@ -127,7 +127,7 @@
 
     function replyToBad(cmt) {
         if (!!cmt) {
-        	// console.log("replyToBad: checking");
+        	console.log("replyToBad: checking");
             for (var i = 0; i < cmt.childNodes.length; i++) {
                 var ch = cmt.childNodes[i];
                 if (!!ch.tagName && ch.tagName.toLowerCase() == "p") {
@@ -136,7 +136,7 @@
                         if (!!gc.tagName && gc.tagName.toLowerCase()=="a") {
                         	var idx = idxBad(gc.innerHTML);
                             if (idx != -1) {
-                            	// console.log("replyToBad: match");
+                            	console.log("replyToBad: match");
                                 return idx;
                             }
                         }
@@ -164,7 +164,7 @@
             null);
 
         for (var story = 0; story < allLIs.snapshotLength; story++) {
-			// console.log("modComments: comment LIs: " + allLIs.snapshotLength);
+			console.log("modComments: comment LIs: " + allLIs.snapshotLength);
 
             thisLI = allLIs.snapshotItem(story);
 
@@ -182,21 +182,25 @@
 
                     var authName = cmtAuthName(comment);
                     
-                    // console.log("modComments: looking at comment from " + authName);
+                    console.log("modComments: looking at comment from " + authName);
 
                     var badIdx = idxBad(authName);
 
-					// console.log("modComments: idx into baddies is " + badIdx);
+					console.log("modComments: badidx ? " + badIdx);
 
 					var badInReply = replyToBad(comment)
+					
+					console.log("modComments: bad reply ? " + badInReply);
+					
                     // did we find anyone?
                     if (badIdx != -1 || badInReply!=-1) {
 
-						// console.log("modComments: pieing");
+						console.log("modComments: pieing");
 			
                         var pie = pieText(pieStrings);
                         
-                        if (badInReply != -1) {
+                        if (badIdx == -1 && badInReply != -1) {
+                        	console.log("bad reply");
                         	pie = authName + " replied to " + bads[badInReply] + ": " + pie;
                         }
 
