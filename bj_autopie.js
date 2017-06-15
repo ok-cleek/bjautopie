@@ -190,13 +190,13 @@
 
 					var badInReply = replyToBad(comment)
                     // did we find anyone?
-                    if (badIdx != -1 || badInReply) {
+                    if (badIdx != -1 || badInReply!=-1) {
 
 						// console.log("modComments: pieing");
 			
                         var pie = pieText(pieStrings);
                         
-                        if (badInReply) {
+                        if (badInReply != -1) {
                         	pie = authName + " replied to " + bads[badInReply] + ": " + pie;
                         }
 
