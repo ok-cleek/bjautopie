@@ -134,9 +134,10 @@
                     for (var j = 0; j < ch.childNodes.length; j++) {
                         var gc = ch.childNodes[j];
                         if (!!gc.tagName && gc.tagName.toLowerCase()=="a") {
-                            if (idxBad(gc.innerHTML) != -1) {
+                        	var idx = idxBad(gc.innerHTML);
+                            if (idx != -1) {
                             	// console.log("replyToBad: match");
-                                return 1;
+                                return idx;
                             }
                         }
                     }
@@ -145,7 +146,7 @@
         }
 
 		// console.log("replyToBad: no match");
-        return 0;
+        return -1;
     }
 
     function pieText(pieStrings) {
@@ -187,12 +188,17 @@
 
 					// console.log("modComments: idx into baddies is " + badIdx);
 
+					var badInReply = replyToBad(comment)
                     // did we find anyone?
-                    if (badIdx != -1 || replyToBad(comment)) {
+                    if (badIdx != -1 || badInReply) {
 
 						// console.log("modComments: pieing");
 			
                         var pie = pieText(pieStrings);
+                        
+                        if (badInReply) {
+                        	pie = authName + " replied to " + bads[badInReply] + ": " + pie;
+                        }
 
                         // to tag our wrapper DIV
                         var pieID = "pie_" + commentID;
