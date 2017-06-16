@@ -114,41 +114,33 @@
         var authorName = "";
 
         if (!!comment) {
-            var hdr = firstChild(comment, "header", "comment-header");
-            // console.log("hdr " + hdr.innerHTML);
-            
-            var hdrChild = firstChild(hdr, "cite", "author_name heading");
-            // console.log("hdrChild " + hdrChild.innerHTML);
-
-            var aOfCite = firstChild(hdrChild, "a");
-            if (!!aOfCite) {
-                hdrChild = aOfCite;
-            }
-            // console.log("hdrChild " + hdrChild.innerHTML);
-            
-            var cite = firstChild(hdrChild, "cite");
+            var vcard = firstChild(comment, "div", "comment-author vcard");
+            var cite = firstChild(vcard, "cite", "fn");
             if (!!cite) {
-                // console.log("cite " + hdrChild.innerHTML);
-                authorName = cite.innerHTML;
+                var a = firstChild(cite, "a");
+                if (!!a) {
+                    authorName = a.innerHTML;
+                } else {
+                    authorName = cite.innerHTML;
+                }
             }
         }
-
         return authorName;
     }
 
     function replyToBad(cmt) {
         if (!!cmt) {
-            console.log("replyToBad: checking");
+            // console.log("replyToBad: checking");
             for (var i = 0; i < cmt.childNodes.length; i++) {
                 var ch = cmt.childNodes[i];
                 if (!!ch.tagName && ch.tagName.toLowerCase() == "p") {
                     for (var j = 0; j < ch.childNodes.length; j++) {
                         var gc = ch.childNodes[j];
                         if (!!gc.tagName && gc.tagName.toLowerCase()=="a") {
-                            console.log("replyToBad: testing " + gc.innerHTML);
+                            // console.log("replyToBad: testing " + gc.innerHTML);
                             var idx = idxBad(gc.innerHTML);
                             if (idx != -1) {
-                                console.log("replyToBad: match");
+                                // console.log("replyToBad: match");
                                 return idx;
                             }
                         }
@@ -157,7 +149,7 @@
             }
         }
 
-        console.log("replyToBad: no match");
+        // console.log("replyToBad: no match");
         return -1;
     }
 
@@ -175,11 +167,11 @@
             XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
             null);
 
-        console.log("modComments: comment LIs: " + allLIs.snapshotLength);
+        // console.log("modComments: comment LIs: " + allLIs.snapshotLength);
 
         for (var story = 0; story < allLIs.snapshotLength; story++) {
             
-            console.log("modComments: comment " + story + 1);
+            // console.log("modComments: comment " + story + 1);
             
             thisLI = allLIs.snapshotItem(story);
 
@@ -195,67 +187,69 @@
 
                 if (!!comment) {
 
-                    var article = firstChild(comment, "article");
+                    var authName = cmtAuthName(comment);
                     
-                    if (!!article) {
+                    // console.log("modComments: looking at comment from " + authName);
 
-                        var comment_content = firstChild(article, "div", "comment_content");
+                    var badIdx = idxBad(authName);
+
+                    // console.log("modComments: badidx ? " + badIdx);
+
+                    var badInReply = pieReplies ? replyToBad(comment) : -1;
+                    
+                    // console.log("modComments: bad reply ? " + badInReply);
+                    
+                    // did we find anyone?
+                    if (badIdx != -1 || badInReply!=-1) {
+
+                        // console.log("modComments: pieing");
+            
+                        var pie = pieText(pieStrings);
                         
-                        if (!!comment_content)
-                        {
-                            var authName = cmtAuthName(comment_content);
-                            
-                            console.log("modComments: looking at comment from " + authName);
-
-                            var badIdx = idxBad(authName);
-
-                            console.log("modComments: badidx ? " + badIdx);
-
-                            var comment_text = firstChild(comment_content, "div", "comment_text entry-content-wrapper clearfix");
-
-                            if (!!comment_text) {
-                                
-                                var badInReply = pieReplies ? replyToBad(comment_text) : -1;
-                                
-                                console.log("modComments: bad reply ? " + badInReply);
-                                
-                                // did we find anyone?
-                                if (badIdx != -1 || badInReply!=-1) {
-                                
-                                    console.log("modComments: pieing");
-                        
-                                    var pie = pieText(pieStrings);
-                                    
-                                    if (badIdx == -1 && badInReply != -1) {
-                                        console.log("bad reply");
-                                        pie = "<em>Pied reply to @" + bads[badInReply] + ":</em><blockquote>" + pie + "</blockquote>";
-                                    }
-
-                                    // to tag our wrapper DIV
-                                    var pieID = "pie_" + commentID;
-
-                                    var commentText = pNodes(comment_text);
-
-                                    var txt = "",
-                                        tmp = "";
-
-                                    txt += 
-                                        "<div id='show_" + pieID + "'>" +
-                                        "<p>" +
-                                        pie +
-                                        "</p>" +
-                                        "</div>" +
-
-                                        "<div style='display:none' id='hide_" + pieID + "'>" +
-                                        commentText +
-                                        "</div>" +
-                                        "<a title='Show original?' id='tgl1_" + pieID + "' href='javascript:;' onClick='document.getElementById(\"hide_" + pieID + "\").style.display=\"block\";document.getElementById(\"show_" + pieID + "\").style.display=\"none\";document.getElementById(\"tgl2_" + pieID + "\").style.display=\"block\";this.style.display=\"none\"'>" + showPieText + "</a>" +
-                                        "<a title='Return to pie!' style='display:none' id='tgl2_" + pieID + "' href='javascript:;' onClick='document.getElementById(\"hide_" + pieID + "\").style.display=\"none\";document.getElementById(\"show_" + pieID + "\").style.display=\"block\";document.getElementById(\"tgl1_" + pieID + "\").style.display=\"block\";this.style.display=\"none\"'>" + hidePieText + "</a>";
-
-                                    comment_text.innerHTML = txt;
-                                }
-                            }
+                        if (badIdx == -1 && badInReply != -1) {
+                            // console.log("bad reply");
+                            pie = "<em>Pied reply to @" + bads[badInReply] + ":</em><blockquote>" + pie + "</blockquote>";
                         }
+
+                        // to tag our wrapper DIV
+                        var pieID = "pie_" + commentID;
+
+                        var vcard = firstChild(comment, "div", "comment-author vcard");
+                        var cmeta = firstChild(comment, "div", "comment-meta commentmetadata");
+                        var yarr = firstChild(comment, "div", "yarr");
+                        var reply = firstChild(comment, "div", "reply");
+                        var commentText = pNodes(comment);
+
+
+                        var txt = "",
+                            tmp = "";
+
+                        tmp = (!!vcard) ? vcard.innerHTML : "";
+                        txt += "<div class=\"comment-author vcard\">" + tmp + "</div>";
+
+                        tmp = (!!cmeta) ? cmeta.innerHTML : "";
+                        txt += "<div class=\"comment-meta commentmetadata\">" + tmp + "</div>";
+
+                        txt +=
+                            "<div id='show_" + pieID + "'>" +
+                            "<p>" +
+                            pie +
+                            "</p>" +
+                            "</div>" +
+
+                            "<div style='display:none' id='hide_" + pieID + "'>" +
+                            commentText +
+                            "</div>" +
+                            "<a title='Show original?' id='tgl1_" + pieID + "' href='javascript:;' onClick='document.getElementById(\"hide_" + pieID + "\").style.display=\"block\";document.getElementById(\"show_" + pieID + "\").style.display=\"none\";document.getElementById(\"tgl2_" + pieID + "\").style.display=\"block\";this.style.display=\"none\"'>" + showPieText + "</a>" +
+                            "<a title='Return to pie!' style='display:none' id='tgl2_" + pieID + "' href='javascript:;' onClick='document.getElementById(\"hide_" + pieID + "\").style.display=\"none\";document.getElementById(\"show_" + pieID + "\").style.display=\"block\";document.getElementById(\"tgl1_" + pieID + "\").style.display=\"block\";this.style.display=\"none\"'>" + hidePieText + "</a>";
+
+                        tmp = (!!yarr) ? yarr.innerHTML : "";
+                        txt += "<div class=\"yarr\">" + tmp + "</div>";
+
+                        tmp = (!!reply) ? reply.innerHTML : "";
+                        txt += "<div class=\"reply\">" + tmp + "</div>";
+
+                        comment.innerHTML = txt;
                     }
                 }
             }
@@ -346,24 +340,24 @@
     }
 
     function prettyName(txt) {
-        console.log("prettyName: txt " + txt);
+        // console.log("prettyName: txt " + txt);
         var newName = removeTags(txt);
-        console.log("prettyName: cleaned " + newName);
+        // console.log("prettyName: cleaned " + newName);
         newName = newName.ellipses(50);
         newName = newName.trim()
-        console.log("prettyName: output " + newName);
+        // console.log("prettyName: output " + newName);
         return newName;
     }
 
     function nameProc(txt) {
-        console.log("nameProc: " + txt);
+        // console.log("nameProc: " + txt);
         txt = txt.trim()
-        console.log("nameProc: trimmed: " + txt);
+        // console.log("nameProc: trimmed: " + txt);
         if (txt != "") {
             if (txt.substring(0, 1) == '#') {
-                console.log("nameProc: found #");
+                // console.log("nameProc: found #");
                 var num = Number(txt.substring(1));
-                console.log("nameProc: num is " + num);
+                // console.log("nameProc: num is " + num);
                 
                 if (num <= 0 || num == NaN) {
                     alert("Sorry - I can't find a comment with that number");
@@ -372,7 +366,7 @@
 
                 txt = cmntAuthByNum(num);
                 
-                console.log("nameProc: comment auth from num " + txt);
+                // console.log("nameProc: comment auth from num " + txt);
                 
                 if (txt == "") {
                     alert("Sorry - I can't find the author of comment #" + num);
@@ -381,71 +375,71 @@
             }
         }
         
-        console.log("nameProc: output " + txt);
+        // console.log("nameProc: output " + txt);
         
         return txt;
     }
 
     function doAddBad() {
-        console.log("doAddBad");
+        // console.log("doAddBad");
         
         var txt = getEditText() + ''; // + '' to cvt to string
 
-        console.log("doAddBad: raw txt for add:" + txt);
+        // console.log("doAddBad: raw txt for add:" + txt);
         
         txt = nameProc(txt);
         
-        console.log("doAddBad: processed name for add:" + txt);
+        // console.log("doAddBad: processed name for add:" + txt);
         
         if (txt != "") {
             var showText = prettyName(txt);
             
-            console.log("doAddBad: pretty name for add:" + showText);
+            // console.log("doAddBad: pretty name for add:" + showText);
             
             if (confirm('Add commenter "' + showText + '" to pie filter?')) {
                 
-                console.log("doAddBad: add confirmed, adding to list");
+                // console.log("doAddBad: add confirmed, adding to list");
                 
                 addBad(txt);
                 location.reload(true);
-                console.log("doAddBad: skipping refresh so we can see what's happening");
+                // console.log("doAddBad: skipping refresh so we can see what's happening");
             }
         }
     }
 
     function addBad(targetName) {
-        console.log("addBad: adding '" + targetName);
+        // console.log("addBad: adding '" + targetName);
         
         var listJSON = localStorage.getItem(lsPieNames);
 
-        console.log("addBad: current list JSON:" + listJSON);
+        // console.log("addBad: current list JSON:" + listJSON);
 
         var list;
         if (!!listJSON) {
             list = JSON.parse(listJSON);
 
-            console.log("addBad: parsed list :" + list);
+            // console.log("addBad: parsed list :" + list);
 
             if (arrayHasString(list, targetName)==0) {
-                console.log("addBad: target not found. adding");
+                // console.log("addBad: target not found. adding");
                 list.push(targetName);
             }
         } else {
-            console.log("addBad: no list found. making new list. adding");
+            // console.log("addBad: no list found. making new list. adding");
             list = new Array(targetName)
         }
 
-        console.log("addBad: new list:" + list);
+        // console.log("addBad: new list:" + list);
 
         var js_list = JSON.stringify(list);
         
-        console.log("addBad: new list JSON:" + js_list);
+        // console.log("addBad: new list JSON:" + js_list);
         
         localStorage.setItem(lsPieNames, js_list);
 
         bads.push(targetName);
         
-        console.log("addBad: new bads list:" + bads);
+        // console.log("addBad: new bads list:" + bads);
     }
 
     function doRemBad() {
@@ -565,6 +559,7 @@
                 el.style.padding = '4px';
                 el.style.marginTop = '4px';
                 el.style.marginBottom = '4px';
+                el.id = "autopie";
 
                 el.style.width = taw;
 
