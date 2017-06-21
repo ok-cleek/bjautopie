@@ -159,6 +159,10 @@
     }
 
     function modComments(pieStrings) {
+    	
+    	if (bads == null || bads.length==0)
+    	   return;
+    	
         var allLIs, thisLI;
         allLIs = document.evaluate(
             "//li[starts-with(@id, 'li-comment-')]",
