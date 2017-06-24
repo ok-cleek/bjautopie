@@ -1,6 +1,6 @@
 /* autopie for Balloon Juice, by cleek@ok-cleek.com */
 (function(autoPie, $, undefined) {
-    var pieStringsURI = "https://test.balloon-juice.com/pie_strings.json";
+    var pieStringsURI = "https://www.balloon-juice.com/pie_strings.json";
 
     // localstorage item name
     var lsPieNames = "BJAutoPieNamesList";
@@ -159,6 +159,10 @@
     }
 
     function modComments(pieStrings) {
+    	
+    	if (bads == null || bads.length==0)
+    	   return;
+    	
         var allLIs, thisLI;
         allLIs = document.evaluate(
             "//li[starts-with(@id, 'li-comment-')]",
