@@ -8,7 +8,7 @@
     var lsPieNames = "BJAutoPieNamesList";
 
     // show.hide pie texts
-    var showPieText = "&raquo;";
+    var showPieText = "&raquo;"; 
     var hidePieText = "&laquo;";
 
     // emergency pie text
