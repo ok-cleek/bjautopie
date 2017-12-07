@@ -1,6 +1,8 @@
 /* autopie for Balloon Juice, by cleek@ok-cleek.com */
 (function(autoPie, $, undefined) {
-    var pieStringsURI = "https://www.balloon-juice.com/pie_strings.json";
+    function pieStringsURI() {
+        return 'https://' + document.location.host + '/bjcustom/pie_strings.json';
+    }
 
     // localstorage item name
     var lsPieNames = "BJAutoPieNamesList";
@@ -22,7 +24,7 @@
     autoPie.init = function() {
         var pieStrings = new Array();
 
-        jQuery.getJSON(pieStringsURI, null,
+        jQuery.getJSON(pieStringsURI(), null,
                 function(d) {
                     pieStrings = d.slice();
                     run(pieStrings);
@@ -159,10 +161,10 @@
     }
 
     function modComments(pieStrings) {
-    	
-    	if (bads == null || bads.length==0)
-    	   return;
-    	
+        
+        if (bads == null || bads.length==0)
+           return;
+        
         var allLIs, thisLI;
         allLIs = document.evaluate(
             "//li[starts-with(@id, 'li-comment-')]",
@@ -484,24 +486,28 @@
     }
 
     function doShowBads() {
+        var listText = "You aren't filtering anyone.";
         var listJSON = localStorage.getItem(lsPieNames);
         if (!!listJSON) {
             var list = JSON.parse(listJSON);
             if (list.length > 0) {
                 list.sort();
-                var listText = "";
-                for (var i = 0; i < list.length - 1; i++) {
-                    var t = i + 1;
-                    listText = listText + "    " + t + ". " + prettyName(list[i]) + "\n";
+                var listText = "<ol>";
+                for (var i = 0; i < list.length; i++) {
+                    listText = listText + "<li>" + prettyName(list[i]) + "</li>";
                 }
-                listText = listText + "    "  + list.length + ". " + prettyName(list[list.length - 1]);
-
-                alert("Here are the people you're filtering:\n" + listText);
-            } else {
-                alert("You aren't filtering anyone.");
+                listText = listText + "</ol>";
             }
-        } else {
-            alert("You aren't filtering anyone.");
+        }
+        
+        var pieListTextDiv = document.getElementById('pieModalText');
+        if (!!pieListTextDiv) {
+            pieListTextDiv.innerHTML = listText;
+                
+            var modal = document.getElementById('pieModal');
+            if (!!modal) {
+                modal.style.display = "block";
+            }
         }
     }
 
@@ -512,7 +518,23 @@
         }
         return "";
     }
-
+    
+    function addCSSForModal() {
+        var css = document.createElement("style");
+        css.type = "text/css";
+        css.innerHTML = `
+        .pielistmodal {display: none; position: fixed; z-index: 2; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4);}
+        .pielistmodal-content {background-color: #fefefe; margin: 10% auto; padding: 0;  border: 1px solid #888; width: 40%;}
+        .pielisthdr {padding: 12px 16px; background-color: #707070; color: white; font-size: 16px; font-weight: bold;}
+        .pielistclose {color: #aaa; float: right; font-size: 28px; font-weight: bold;}
+        .pielistclose:hover, .pieclose:focus {color: black; text-decoration: none; cursor: pointer;} 
+        .pielisttext {margin-top: 10px; padding: 2px 16px 16px;}
+        .pielisttext OL {margin-bottom: 0px;}
+        `;
+        
+        document.body.appendChild(css);     
+    }
+    
     function addButtonListeners() {
         document.getElementById("apAddBtn").addEventListener('click', doAddBad, true);
         document.getElementById("apRemBtn").addEventListener('click', doRemBad, true);
@@ -536,6 +558,8 @@
                 XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
                 null);          
         }
+        
+        addCSSForModal();
         
         if (commentForm.snapshotLength == 1) {
             var frm = commentForm.snapshotItem(0);
@@ -570,6 +594,35 @@
                 frm.appendChild(el);
 
                 addButtonListeners();
+                
+                var mel = document.createElement("div");
+                mel.innerHTML =
+                `<div id="pieModal" class="pielistmodal">
+                  <div class="pielistmodal-content">
+                    <div class="pielisthdr">
+                        <span class="pielistclose">&times;</span>
+                        Here are the people you are filtering
+                    </div>
+                    <div class="pielisttext" id="pieModalText">testing</div>
+                  </div>
+                </div>`
+                frm.appendChild(mel);
+                
+                var modal = document.getElementById('pieModal');
+                if (!!modal) {
+                    var span = document.getElementsByClassName("pielistclose")[0];
+                    if (!!span) {
+                        span.onclick = function() {
+                            modal.style.display = "none";
+                        }
+                        
+                        window.onclick = function(event) {
+                            if (event.target == modal) {
+                                modal.style.display = "none";
+                            }
+                        }                
+                    }
+                }
             }
         }
     }
